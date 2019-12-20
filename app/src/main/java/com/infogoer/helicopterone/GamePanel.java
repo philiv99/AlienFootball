@@ -2,6 +2,10 @@ package com.infogoer.helicopterone;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -9,12 +13,18 @@ import android.view.SurfaceView;
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private MainThread thread;
 
+    private SceneManager manager;
+
     public GamePanel(Context context) {
         super(context);
 
         getHolder().addCallback(this);
 
+        Constants.CURRENT_CONTEXT = context;
+
         thread = new MainThread(getHolder(), this);
+
+        manager = new SceneManager();
 
         setFocusable(true);
     }
@@ -22,7 +32,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         thread = new MainThread(getHolder(), this);
-
+        Constants.INIT_TIME = System.currentTimeMillis();
         thread.setRunning(true);
         thread.start();
 
@@ -47,17 +57,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return super.onTouchEvent(event);
-
+        manager.receiveTouch(event);
+        return true;
     }
 
     public void update() {
-
+        manager.update();
     }
 
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-
+        manager.draw(canvas);
     }
 }
